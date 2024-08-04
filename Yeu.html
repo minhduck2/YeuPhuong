@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fireworks Effect</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: black;
+            color: white;
+            font-family: Arial, sans-serif;
+        }
+        #button {
+            padding: 10px 20px;
+            font-size: 20px;
+            cursor: pointer;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1;
+        }
+        #message {
+            position: absolute;
+            top: 40%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 50px;
+            display: none;
+            z-index: 2;
+        }
+        #canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 0;
+        }
+    </style>
+</head>
+<body>
+    <button id="button">Click Me</button>
+    <div id="message"> Yeu Yeu Phuong Nhat Tren Doi</div>
+    <canvas id="canvas"></canvas>
+
+    <script>
+        const button = document.getElementById('button');
+        const message = document.getElementById('message');
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        button.addEventListener('click', () => {
+            message.style.display = 'block';
+            createFireworks();
+            createTextParticles();
+        });
+
+        function createFireworks() {
+            let particles = [];
+            let hue = 120;
+
+            function random(min, max) {
+                return Math.random() * (max - min) + min;
+            }
+
+            function createParticle(x, y) {
+                const angle = Math.random() * Math.PI * 2;
+                const speed = Math.random() * 5 + 2;
+                const size = Math.random() * 2 + 1;
+                const color = `hsl(${hue}, 100%, 50%)`;
+                return { x, y, angle, speed, size, color };
+            }
+
+            function updateParticles() {
+                particles.forEach((p, i) => {
+                    p.x += Math.cos(p.angle) * p.speed;
+                    p.y += Math.sin(p.angle) * p.speed;
+                    p.size *= 0.95;
+                    if (p.size < 0.1) particles.splice(i, 1);
+                });
+            }
+
+            function drawParticles() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                particles.forEach(p => {
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                    ctx.fillStyle = p.color;
+                    ctx.fill();
+                });
+            }
+
+            function loop() {
+                updateParticles();
+                drawParticles();
+                requestAnimationFrame(loop);
+            }
+
+            for (let i = 0; i < 300; i++) {
+                particles.push(createParticle(canvas.width / 2, canvas.height / 2));
+            }
+
+            loop();
+        }
+
+        function createTextParticles() {
+            let particles = [];
+            const text = " Yeu Yeu Phuong Nhat Tren Doi";
+
+            function random(min, max) {
+                return Math.random() * (max - min) + min;
+            }
+
+            function createParticle(x, y) {
+                const angle = Math.random() * Math.PI * 2;
+                const speed = Math.random() * 3 + 1;
+                const size = Math.random() * 24 + 12;
+                const alpha = Math.random() * 0.5 + 0.5;
+                return { x, y, angle, speed, size, alpha, text };
+            }
+
+            function updateParticles() {
+                particles.forEach((p, i) => {
+                    p.x += Math.cos(p.angle) * p.speed;
+                    p.y += Math.sin(p.angle) * p.speed;
+                    p.alpha *= 0.96;
+                    if (p.alpha < 0.01) particles.splice(i, 1);
+                });
+            }
+
+            function drawParticles() {
+                particles.forEach(p => {
+                    ctx.font = `${p.size}px Arial`;
+                    ctx.fillStyle = `rgba(255, 255, 255, ${p.alpha})`;
+                    ctx.fillText(p.text, p.x, p.y);
+                });
+            }
+            
+     
+            function loop() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                updateParticles();
+                drawParticles();
+                requestAnimationFrame(loop);
+            }
+
+            for (let i = 0; i < 50; i++) {
+                particles.push(createParticle(canvas.width / 2, canvas.height / 2));
+            }
+
+            loop();
+        }
+    </script>
+</body>
+</html>
